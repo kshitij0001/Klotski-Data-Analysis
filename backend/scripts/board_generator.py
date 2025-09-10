@@ -13,7 +13,19 @@ from backend.klotski.utils import Block
 console = Console()
 
 
-def render_klotski_board(blocks, rows=5, cols=4):
+def render_klotski_board(blocks, rows=5, cols=4, return_string=False):
+    """
+    Render Klotski board either to console or as string.
+    
+    Args:
+        blocks: List of Block objects
+        rows: Number of rows (default 5)
+        cols: Number of columns (default 4)
+        return_string: If True, return as string instead of printing
+    
+    Returns:
+        String representation if return_string=True, None otherwise
+    """
     from rich.console import Console
     console = Console()
 
@@ -73,17 +85,25 @@ def render_klotski_board(blocks, rows=5, cols=4):
     def cell_symbol(block_idx):
         if block_idx is None:
             return " X "
-        block = blocks[block_idx]
-        if block.num_rows == 2 and block.num_cols == 2:
-            return "[red1 on red1]   [/]"
-        elif block.num_rows == 2 and block.num_cols == 1:
-            return "[cyan1 on cyan1]   [/]"
-        elif block.num_rows == 1 and block.num_cols == 2:
-            return "[yellow1 on yellow1]   [/]"
+        if return_string:
+            # Simple text for string output
+            return "   "
         else:
-            return "[green1 on green1]   [/]"
+            # Rich formatting for console output
+            block = blocks[block_idx]
+            if block.num_rows == 2 and block.num_cols == 2:
+                return "[red1 on red1]   [/]"
+            elif block.num_rows == 2 and block.num_cols == 1:
+                return "[cyan1 on cyan1]   [/]"
+            elif block.num_rows == 1 and block.num_cols == 2:
+                return "[yellow1 on yellow1]   [/]"
+            else:
+                return "[green1 on green1]   [/]"
 
     # Render
+    if return_string:
+        output_lines = []
+        
     for r_node in range(rows + 1):
         # Junction line
         line = ""
@@ -98,7 +118,11 @@ def render_klotski_board(blocks, rows=5, cols=4):
             line += j
             if c_node < cols:
                 line += (H * 3) if h[r_node][c_node] else "   "
-        console.print(line)
+        
+        if return_string:
+            output_lines.append(line)
+        else:
+            console.print(line)
 
         # Content line
         if r_node < rows:
@@ -107,7 +131,14 @@ def render_klotski_board(blocks, rows=5, cols=4):
                 content += (V if v[r_node][c] else " ")
                 content += cell_symbol(board[r_node][c])
             content += (V if v[r_node][cols] else " ")
-            console.print(content)
+            
+            if return_string:
+                output_lines.append(content)
+            else:
+                console.print(content)
+    
+    if return_string:
+        return "\n".join(output_lines)
 
 
 # Run the renderer

@@ -1,0 +1,14 @@
+numpy
+pandas
+networkx
+scikit-learn
+joblib
+tqdm
+streamlit
+pyarrow
+typing
+rich
+fastapi
+uvicorn
+plotly
+streamlit-plotly-events

@@ -26,8 +26,6 @@ def render_klotski_board(blocks, rows=5, cols=4, return_string=False):
     Returns:
         String representation if return_string=True, None otherwise
     """
-    from rich.console import Console
-    console = Console()
 
     # Build board index grid (None for empty cells)
     board = [[None for _ in range(cols)] for _ in range(rows)]
@@ -101,8 +99,7 @@ def render_klotski_board(blocks, rows=5, cols=4, return_string=False):
                 return "[green1 on green1]   [/]"
 
     # Render
-    if return_string:
-        output_lines = []
+    output_lines = []
         
     for r_node in range(rows + 1):
         # Junction line

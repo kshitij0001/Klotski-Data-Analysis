@@ -46,7 +46,10 @@ def generate_random_klotski_board(rows=5, cols=4):
 
     # 3. Fill the rest with random blocks (2x1, 1x2, 1x1) until exactly 2 empty spaces remain
     block_types = [(2, 1), (1, 2), (1, 1)]
-    while True:
+    max_attempts = 1000  # Prevent infinite loops
+    attempts = 0
+    
+    while attempts < max_attempts:
         empty_cells = [(i, j) for i in range(rows) for j in range(cols) if grid[i][j] is None]
         if len(empty_cells) == 2:
             break  # Stop when exactly 2 empty spaces remain
@@ -79,8 +82,31 @@ def generate_random_klotski_board(rows=5, cols=4):
                     blocks.append(Block(1, 1, i, j))
                     grid[i][j] = "1x1"
                     block_counts["1x1"] +=1
+                    placed = True
                     break
+        
+        # If we still can't place anything, we're stuck - break out
+        if not placed:
+            # Fill remaining spaces with 1x1 blocks to avoid infinite loop
+            remaining_empty = [(i, j) for i in range(rows) for j in range(cols) if grid[i][j] is None]
+            for (i, j) in remaining_empty[:-2]:  # Leave exactly 2 empty
+                blocks.append(Block(1, 1, i, j))
+                grid[i][j] = "1x1"
+                block_counts["1x1"] += 1
+            break
+            
+        attempts += 1
 
+    # Final validation: ensure exactly 2 empty spaces
+    final_empty = [(i, j) for i in range(rows) for j in range(cols) if grid[i][j] is None]
+    if len(final_empty) != 2:
+        # Force exactly 2 empty spaces
+        if len(final_empty) > 2:
+            # Fill excess with 1x1 blocks
+            for (i, j) in final_empty[2:]:  
+                blocks.append(Block(1, 1, i, j))
+                block_counts["1x1"] += 1
+    
     return blocks, block_counts
 
 
